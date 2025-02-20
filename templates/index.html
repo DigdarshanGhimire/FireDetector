@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Sensor UI</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            gap: 20px;
+        }
+
+        .containerData {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .numbercontainer {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 600;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .gradient-border {
+            position: relative;
+            z-index: 1;
+        }
+
+        .gradient-border:before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        .temp .gradient-border:before {
+            background: linear-gradient(45deg, rgba(255, 100, 100, 0.8), rgba(255, 150, 150, 0.8));
+        }
+
+        .humidity .gradient-border:before {
+            background: linear-gradient(45deg, rgba(100, 150, 255, 0.8), rgba(150, 200, 255, 0.8));
+        }
+
+        .gas .gradient-border:before {
+            background: linear-gradient(45deg, rgba(255, 180, 100, 0.8), rgba(255, 220, 150, 0.8));
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .numbercontainer {
+                width: 120px;
+                height: 120px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="containerData temp">
+            <h2>Temperature</h2>
+            <div class="numbercontainer gradient-border">{{data.temperature}}</div>
+        </div>
+        <div class="containerData humidity">
+            <h2>Humidity</h2>
+            <div class="numbercontainer gradient-border">{{data.humidity}}</div>
+        </div>
+        <div class="containerData gas">
+            <h2>Gas Value</h2>
+            <div class="numbercontainer gradient-border">{{data.gasValue}}</div>
+        </div>
+    </div>
+</body>
+</html>

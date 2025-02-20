@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/style.css">
+    <title>Admin Dashboard</title>
+        <style>
+            :root{
+                --bg-color:#a3800b;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                display: flex;
+            }
+            .sidebar {
+                width: 250px;
+                background-color: var(--bg-color);
+                color: white;
+                padding: 15px;
+                height: 100vh;
+            }
+            .sidebar h2 {
+                text-align: center;
+            }
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+            }
+            .sidebar ul li {
+                padding: 10px;
+            }
+            .sidebar ul li a {
+                color: white;
+                text-decoration: none;
+                display: block;
+            }
+            .sidebar ul li a:hover {
+                background-color: var(--bg-color);
+                padding-left: 10px;
+                transition: 0.3s;
+            }
+            .main-content {
+                flex-grow: 1;
+                background-color: #FFF5E1;
+                font-size: 14px;
+
+            }
+
+            .main-content h2{
+                font-size: 15px;
+            }
+            .navbar {
+                background-color: var(--bg-color);
+                padding: 15px;
+                text-align: center;
+                color: white;
+                font-size: 20px;
+            }
+            .content h3 {
+                color: #D95D39;
+            }
+        </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Users</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="navbar">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="content">
+            <h3>Welcome to the Admin Dashboard</h3>
+            <p>Manage users, view analytics, and update settings from here.</p>
+        </div>
+    </div>
+</body>
+</html>
