@@ -3,26 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Sensor UI</title>
+    <title>Sensor Data</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "26191724-825a-462b-b4c4-8a6be7ef71a0",
+        });
+      });
+    </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f8f8;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.5s ease;
         }
 
         .container {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
-            width: 90%;
-            max-width: 1200px;
-            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            gap: 40px;
         }
 
         .containerData {
@@ -34,80 +51,154 @@
         }
 
         h2 {
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: 600;
+            margin-bottom: 15px;
         }
 
         .numbercontainer {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
+            width: 200px;
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2rem;
-            font-weight: 600;
-            background-color: white;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .gradient-border {
+            font-size: 40px;
+            font-weight: bold;
+            border-radius: 50%;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
             position: relative;
-            z-index: 1;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease, border 0.3s ease;
         }
 
-        .gradient-border:before {
+        .numbercontainer:before {
             content: "";
             position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 170px;
-            height: 170px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            z-index: -1;
-            filter: blur(8px);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent);
         }
 
-        .temp .gradient-border:before {
-            background: linear-gradient(45deg, rgba(255, 100, 100, 0.8), rgba(255, 150, 150, 0.8));
+        .temperature {
+            background: linear-gradient(135deg, #ff4d4d, #ff9999);
         }
 
-        .humidity .gradient-border:before {
-            background: linear-gradient(45deg, rgba(100, 150, 255, 0.8), rgba(150, 200, 255, 0.8));
+        .humidity {
+            background: linear-gradient(135deg, #4d94ff, #99ccff);
         }
 
-        .gas .gradient-border:before {
-            background: linear-gradient(45deg, rgba(255, 180, 100, 0.8), rgba(255, 220, 150, 0.8));
+        .gas {
+            background: linear-gradient(135deg, #ff9933, #ffcc80);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
+        .alert {
+            border: 5px solid red !important;
+            filter: brightness(70%);
+        }
 
-            .numbercontainer {
-                width: 120px;
-                height: 120px;
-                font-size: 1.5rem;
-            }
+        .dashboard-btn {
+            margin-top: 30px;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            background: linear-gradient(135deg, #4d94ff, #99ccff);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .dashboard-btn:hover {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            transform: scale(1.05);
         }
     </style>
+
+    <script>
+        let alertActive = false;
+        let alertInterval = null;
+
+        function updateData() {
+            fetch('http://127.0.0.1:5000/data.json').then(async (response) => {
+                let data = await response.json();
+        
+                let dataJson = {
+                    "data1": data.temperature,
+                    "data2": data.humidity,
+                    "data3": data.gasValue
+                };
+        
+                let thresholds = {
+                    "data1": { condition: (val) => val > 45, element: document.getElementById("data1"), bgColor: "#b22222" }, // Dark Red
+                    "data2": { condition: (val) => val < 20, element: document.getElementById("data2"), bgColor: "#1e3a8a" }, // Dark Blue
+                    "data3": { condition: (val) => val > 1931, element: document.getElementById("data3"), bgColor: "#8b4513" } // Dark Brown
+                };
+        
+                Object.keys(thresholds).forEach((key) => {
+                    let element = thresholds[key].element;
+                    element.innerHTML = dataJson[key];
+        
+                    if (thresholds[key].condition(dataJson[key])) {
+                        element.style.background = thresholds[key].bgColor;
+                        element.style.border = "5px solid red";
+                        element.style.color = "red";
+                    } else {
+                        element.style.background = "";
+                        element.style.border = "";
+                        element.style.color = "white";
+                    }
+                });
+        
+                // Alert condition check
+                if (data.temperature > 45 || data.humidity < 20 || data.gasValue > 1931) {
+                    if (!alertActive) {
+                        startAlert();
+                    }
+                } else {
+                    stopAlert();
+                }
+            });
+        }
+
+        function startAlert() {
+            alertActive = true;
+            let isRed = false;
+            alertInterval = setInterval(() => {
+                document.body.style.backgroundColor = isRed ? "white" : "#f54c40";
+                isRed = !isRed;
+            }, 1000);
+        }
+
+        function stopAlert() {
+            alertActive = false;
+            clearInterval(alertInterval);
+            document.body.style.backgroundColor = "white";
+        }
+
+        setInterval(updateData, 2000);
+    </script>
 </head>
 <body>
     <div class="container">
-        <div class="containerData temp">
+        <div class="containerData">
             <h2>Temperature</h2>
-            <div class="numbercontainer gradient-border">{{data.temperature}}</div>
+            <div class="numbercontainer temperature" id="data1">40</div>
         </div>
-        <div class="containerData humidity">
+        <div class="containerData">
             <h2>Humidity</h2>
-            <div class="numbercontainer gradient-border">{{data.humidity}}</div>
+            <div class="numbercontainer humidity" id="data2">29</div>
         </div>
-        <div class="containerData gas">
+        <div class="containerData">
             <h2>Gas Value</h2>
-            <div class="numbercontainer gradient-border">{{data.gasValue}}</div>
+            <div class="numbercontainer gas" id="data3">1131</div>
         </div>
     </div>
+
+    <button class="dashboard-btn" onclick="window.location.href='/dashboard'">Go to Dashboard</button>
 </body>
 </html>

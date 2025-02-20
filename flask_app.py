@@ -28,17 +28,17 @@ def send_push_notification(title, message, user_id=None):
 
 
 
+
+
 app = Flask(__name__)
+
 
 app.secret_key = 'mechaction1234'
 
 @app.route('/', methods= ['GET'])
 def home():
-    with open('data.json') as f:
-        text = f.read()
-        
-    data = json.loads(text)
-    return render_template('index.html',data=data)
+
+    return render_template('index.html')
 
 
 @app.route('/api/fetch/data', methods=["POST"])
@@ -48,22 +48,32 @@ def fetch():
     humidity = data.get("humidity")
     gasValue = data.get("gasValue")
     data = json.dumps(data)
+
+    # Use the correct path for PythonAnywhere's writable area
+    file_path = "data.json"
+    #file_path = "/home/digdarshan/mysite/data.json"
+
     try:
-        with open('data.json','w') as f:
+        with open(file_path, "w") as f:
             f.write(data)
-    except:
-        pass
-    
-    if temperature>45 or humidity<20 or gasValue>1931:
+    except Exception as e:
+        return {"message": f"Error writing file: {str(e)}"}
+
+    if temperature > 45 or humidity < 20 or gasValue > 1931:
         response = send_push_notification("Fire detected!", "Fire has been detected. Take immediate action")
-        return {"message":"The threshold was exceeded"}
-    
-    return {"message":"The data was fetched successfully"}
-    
+        return {"message": "The threshold was exceeded"}
+
+    return {"message": "The data was fetched successfully"}
+
+
 
 @app.route('/OneSignalSDKWorker.js')
 def serve_file():
     return send_from_directory('.', 'OneSignalSDKWorker.js')
+
+@app.route('/data.json')
+def serve_file_json():
+    return send_from_directory('.', 'data.json')
 
 
 @app.route('/dashboard')
